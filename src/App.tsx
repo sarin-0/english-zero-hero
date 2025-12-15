@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, ReactNode } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import type { ReactNode } from 'react'; // ✅ แก้ไข: แยก Type ออกมาบรรทัดนี้
 import { Book, MessageCircle, Briefcase, Clock, Globe, X, CheckCircle, ChevronRight, GraduationCap, Sparkles, Send, Bot } from 'lucide-react';
 
-// --- Type Definitions (เพิ่มส่วนนี้เพื่อแก้ Error) ---
+// --- Type Definitions ---
 interface Topic {
   title: string;
   desc: string;
