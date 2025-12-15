@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { Book, MessageCircle, Briefcase, Clock, Globe, X, CheckCircle, ChevronRight, GraduationCap, Sparkles, Send, Bot, PlayCircle, Trophy, RefreshCw } from 'lucide-react';
+import { Book, MessageCircle, Briefcase, Clock, Globe, X, CheckCircle, ChevronRight, GraduationCap, Sparkles, Send, Bot, Trophy } from 'lucide-react';
 
 // --- Type Definitions ---
 interface Quiz {
