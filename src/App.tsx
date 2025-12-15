@@ -1,12 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
-import type { ReactNode } from 'react'; // ✅ แก้ไข: แยก Type ออกมาบรรทัดนี้
-import { Book, MessageCircle, Briefcase, Clock, Globe, X, CheckCircle, ChevronRight, GraduationCap, Sparkles, Send, Bot } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { Book, MessageCircle, Briefcase, Clock, Globe, X, CheckCircle, ChevronRight, GraduationCap, Sparkles, Send, Bot, PlayCircle, Trophy, RefreshCw } from 'lucide-react';
 
 // --- Type Definitions ---
+interface Quiz {
+  question: string;
+  options: string[];
+  correctAnswer: number; // Index ของข้อที่ถูก (เริ่มที่ 0)
+}
+
 interface Topic {
   title: string;
   desc: string;
   content: string;
+  quiz: Quiz;
 }
 
 interface CurriculumStage {
@@ -89,7 +96,7 @@ const GlobalStyles = () => (
   `}</style>
 );
 
-// --- Curriculum Data ---
+// --- Curriculum Data with Quizzes ---
 const curriculumData: CurriculumStage[] = [
   {
     id: 1,
@@ -115,7 +122,12 @@ const curriculumData: CurriculumStage[] = [
             </div>
             <p><strong>Tip:</strong> ลองฝึกออกเสียงพยัญชนะต้นและตัวสะกดให้ชัดเจน เช่น "Cat" ต้องมีเสียง "ทึ" เบาๆ ตอนท้าย</p>
           </div>
-        `
+        `,
+        quiz: {
+          question: "ตัว C ในคำว่า 'Cat' ออกเสียงว่าอย่างไร?",
+          options: ["ซี (Sea)", "เคอะ (Kuh)", "จี (Gee)", "แอ (Ah)"],
+          correctAnswer: 1
+        }
       },
       {
         title: "Greetings & Introductions",
@@ -142,7 +154,12 @@ const curriculumData: CurriculumStage[] = [
               <p>🤝 "Nice to meet you." (ยินดีที่ได้รู้จัก)</p>
             </div>
           </div>
-        `
+        `,
+        quiz: {
+          question: "ถ้าต้องการทักทายเพื่อนสนิท ควรใช้คำว่าอะไร?",
+          options: ["Good Morning", "Nice to meet you", "Hi", "Goodbye"],
+          correctAnswer: 2
+        }
       },
       {
         title: "Subject Pronouns",
@@ -165,7 +182,12 @@ const curriculumData: CurriculumStage[] = [
               </tbody>
             </table>
           </div>
-        `
+        `,
+        quiz: {
+          question: "ถ้าจะพูดถึง 'พวกเรา' ต้องใช้คำไหน?",
+          options: ["They", "We", "You", "She"],
+          correctAnswer: 1
+        }
       },
       {
         title: "Verb to Be",
@@ -192,7 +214,12 @@ const curriculumData: CurriculumStage[] = [
               <span class="ml-auto text-sm">We are friends.</span>
             </div>
           </div>
-        `
+        `,
+        quiz: {
+          question: "เติมคำในช่องว่าง: She ... a doctor.",
+          options: ["am", "are", "is", "be"],
+          correctAnswer: 2
+        }
       }
     ]
   },
@@ -218,7 +245,12 @@ const curriculumData: CurriculumStage[] = [
               <li>เปลี่ยนรูป: Man → Men, Child → Children</li>
             </ul>
           </div>
-        `
+        `,
+        quiz: {
+          question: "แมว 2 ตัว เขียนเป็นภาษาอังกฤษว่าอย่างไร?",
+          options: ["Cat", "Cates", "Cats", "Cat's"],
+          correctAnswer: 2
+        }
       },
       {
         title: "Action Verbs",
@@ -234,7 +266,12 @@ const curriculumData: CurriculumStage[] = [
             <div class="bg-emerald-50 p-2 rounded hover:bg-emerald-100 transition">💼 Work (ทำงาน)</div>
           </div>
           <p class="mt-3 text-center italic text-gray-600">"I <strong>eat</strong> pizza every day."</p>
-        `
+        `,
+        quiz: {
+          question: "คำว่า 'เดิน' ภาษาอังกฤษคือ?",
+          options: ["Run", "Walk", "Sleep", "Eat"],
+          correctAnswer: 1
+        }
       },
       {
         title: "Present Simple Tense",
@@ -250,7 +287,12 @@ const curriculumData: CurriculumStage[] = [
             <span class="text-red-500">❌ He play football.</span><br>
             <span class="text-green-600">✅ He <strong>plays</strong> football.</span>
           </div>
-        `
+        `,
+        quiz: {
+          question: "ข้อใดถูกต้อง?",
+          options: ["She walk to school.", "She walks to school.", "She walking to school.", "She walkes to school."],
+          correctAnswer: 1
+        }
       },
       {
         title: "Numbers, Days, Months",
@@ -276,7 +318,12 @@ const curriculumData: CurriculumStage[] = [
               </ul>
             </div>
           </div>
-        `
+        `,
+        quiz: {
+          question: "Twelve คือเลขอะไร?",
+          options: ["11", "12", "20", "21"],
+          correctAnswer: 1
+        }
       }
     ]
   },
@@ -303,7 +350,12 @@ const curriculumData: CurriculumStage[] = [
             <span class="px-2 py-1 bg-gray-100 rounded text-xs">Happy สุข</span>
             <span class="px-2 py-1 bg-gray-100 rounded text-xs">Sad เศร้า</span>
           </div>
-        ` 
+        `,
+        quiz: {
+          question: "ประโยคไหนใช้ Adjective ถูกต้อง?",
+          options: ["A car red.", "A red car.", "Car is red a.", "Red is a car."],
+          correctAnswer: 1
+        }
       },
       { 
         title: "Prepositions", 
@@ -327,7 +379,12 @@ const curriculumData: CurriculumStage[] = [
               <span class="text-sm text-gray-500">Under the chair</span>
             </div>
           </div>
-        ` 
+        `,
+        quiz: {
+          question: "แมวนอนอยู่ ... (บน) โต๊ะ",
+          options: ["in", "at", "under", "on"],
+          correctAnswer: 3
+        }
       },
       { 
         title: "Question Words", 
@@ -341,7 +398,12 @@ const curriculumData: CurriculumStage[] = [
             <li>❓ <strong>Why (ทำไม):</strong> Why do you cry?</li>
             <li>🛠️ <strong>How (อย่างไร):</strong> How are you?</li>
           </ul>
-        ` 
+        `,
+        quiz: {
+          question: "ถ้าอยากถามเกี่ยวกับ 'สถานที่' ต้องใช้คำไหน?",
+          options: ["Who", "What", "Where", "When"],
+          correctAnswer: 2
+        }
       },
       { 
         title: "Daily Routine", 
@@ -356,7 +418,12 @@ const curriculumData: CurriculumStage[] = [
             <p>🏠 <strong>Go home:</strong> กลับบ้าน</p>
             <p>🛌 <strong>Go to bed:</strong> เข้านอน</p>
           </div>
-        ` 
+        `,
+        quiz: {
+          question: "'Go to bed' แปลว่าอะไร?",
+          options: ["ตื่นนอน", "ไปทำงาน", "เข้านอน", "ไปซื้อเตียง"],
+          correctAnswer: 2
+        }
       }
     ]
   },
@@ -381,7 +448,12 @@ const curriculumData: CurriculumStage[] = [
             </ul>
             <p class="mt-2 text-sm italic">"I <strong>went</strong> to the market yesterday."</p>
           </div>
-        ` 
+        `,
+        quiz: {
+          question: "รูปอดีต (V.2) ของ 'Go' คือ?",
+          options: ["Goed", "Gone", "Went", "Going"],
+          correctAnswer: 2
+        }
       },
       { 
         title: "Future Tense", 
@@ -399,7 +471,12 @@ const curriculumData: CurriculumStage[] = [
               <p class="text-sm">"I am <strong>going to</strong> visit Japan."</p>
             </div>
           </div>
-        ` 
+        `,
+        quiz: {
+          question: "ถ้าตัดสินใจเดี๋ยวนั้นว่าจะทำอะไร ควรใช้คำไหน?",
+          options: ["Will", "Going to", "Shall", "Must"],
+          correctAnswer: 0
+        }
       },
       { 
         title: "Continuous Tense", 
@@ -414,7 +491,12 @@ const curriculumData: CurriculumStage[] = [
             <li>✅ She <strong>is sleeping</strong>. (เธอกำลังหลับ)</li>
             <li>✅ They <strong>are playing</strong>. (พวกเขากำลังเล่น)</li>
           </ul>
-        ` 
+        `,
+        quiz: {
+          question: "She ... sleeping.",
+          options: ["am", "are", "is", "be"],
+          correctAnswer: 2
+        }
       },
       { 
         title: "Modal Verbs", 
@@ -438,7 +520,12 @@ const curriculumData: CurriculumStage[] = [
               <span class="text-gray-400 text-xs">I must go.</span>
             </li>
           </ul>
-        ` 
+        `,
+        quiz: {
+          question: "ถ้าจะแนะนำเพื่อนว่า 'ควรจะ' นอนพักผ่อน ใช้คำไหน?",
+          options: ["Can", "Must", "Should", "Will"],
+          correctAnswer: 2
+        }
       }
     ]
   },
@@ -467,7 +554,12 @@ const curriculumData: CurriculumStage[] = [
               <p class="text-sm">"Can I try it on?" (ขอลองใส่ได้ไหม)</p>
             </div>
           </div>
-        ` 
+        `,
+        quiz: {
+          question: "'Check bill, please' แปลว่าอะไร?",
+          options: ["ขอดูเมนู", "ขอใบเสร็จ", "เก็บเงินด้วย", "อาหารไม่อร่อย"],
+          correctAnswer: 2
+        }
       },
       { 
         title: "Travel English", 
@@ -479,7 +571,12 @@ const curriculumData: CurriculumStage[] = [
             <li>🏨 <strong>Hotel:</strong> "I have a reservation." (ฉันจองไว้แล้ว)</li>
             <li>🚽 <strong>Emergency:</strong> "Where is the toilet?"</li>
           </ul>
-        ` 
+        `,
+        quiz: {
+          question: "ประโยค 'I have a reservation' ใช้เมื่อไหร่?",
+          options: ["เมื่อหลงทาง", "เมื่อจองโรงแรมไว้แล้ว", "เมื่อหิวข้าว", "เมื่อเรียกรถแท็กซี่"],
+          correctAnswer: 1
+        }
       },
       { 
         title: "Job Interview", 
@@ -496,7 +593,12 @@ const curriculumData: CurriculumStage[] = [
               <p class="text-gray-600">A: I am hardworking and a fast learner.</p>
             </div>
           </div>
-        ` 
+        `,
+        quiz: {
+          question: "Strengths หมายถึงอะไรในการสัมภาษณ์งาน?",
+          options: ["จุดอ่อน", "จุดแข็ง/ข้อดี", "งานอดิเรก", "ประวัติการศึกษา"],
+          correctAnswer: 1
+        }
       },
       { 
         title: "Slang & Idioms", 
@@ -520,15 +622,175 @@ const curriculumData: CurriculumStage[] = [
               <br><span class="text-gray-500">ออกไปเที่ยวเล่น</span>
             </div>
           </div>
-        ` 
+        `,
+        quiz: {
+          question: "ถ้าจะบอกว่า 'เรื่องนี้ง่ายมากๆ' ควรใช้สำนวนไหน?",
+          options: ["Hang out", "Broke", "Piece of cake", "Chill out"],
+          correctAnswer: 2
+        }
       }
     ]
   }
 ];
 
+// --- Internal Component: Lesson Modal with Quiz Logic ---
+const LessonModal = ({ topic, onClose, onComplete, isCompleted, onStartAI }: { 
+  topic: Topic; 
+  onClose: () => void; 
+  onComplete: (title: string) => void; 
+  isCompleted: boolean;
+  onStartAI: (topic: Topic) => void;
+}) => {
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [showResult, setShowResult] = useState<boolean>(false);
+
+  const handleQuizSubmit = () => {
+    if (selectedOption === null) return;
+    setShowResult(true);
+  };
+
+  const isCorrect = selectedOption === topic.quiz.correctAnswer;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4 backdrop-blur-sm" onClick={onClose}>
+      <div 
+        className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden modal-animate flex flex-col max-h-[90vh]"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Modal Header */}
+        <div className="p-5 border-b flex justify-between items-center bg-gray-50">
+          <h3 className="font-bold text-xl text-gray-800">{topic.title}</h3>
+          <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full transition">
+            <X size={24} className="text-gray-500" />
+          </button>
+        </div>
+
+        {/* Modal Content Scrollable Area */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {/* Lesson Content */}
+          <div 
+            className="text-gray-700 leading-relaxed mb-8"
+            dangerouslySetInnerHTML={{ __html: topic.content }}
+          ></div>
+
+          {/* Mini Quiz Section */}
+          <div className="bg-teal-50 p-5 rounded-xl border border-teal-100">
+            <div className="flex items-center gap-2 mb-3 text-teal-800 font-bold">
+              <Trophy size={20} />
+              <h4>แบบทดสอบความเข้าใจ (Mini Quiz)</h4>
+            </div>
+            <p className="text-sm mb-4 font-medium">{topic.quiz.question}</p>
+            <div className="space-y-2">
+              {topic.quiz.options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => !showResult && setSelectedOption(index)}
+                  disabled={showResult}
+                  className={`w-full text-left px-4 py-3 rounded-lg text-sm border transition-all duration-200
+                    ${showResult 
+                      ? index === topic.quiz.correctAnswer 
+                        ? 'bg-green-100 border-green-500 text-green-800' // Correct answer shown
+                        : index === selectedOption 
+                          ? 'bg-red-100 border-red-500 text-red-800' // Wrong answer selected
+                          : 'bg-gray-50 border-gray-200 text-gray-400'
+                      : selectedOption === index
+                        ? 'bg-teal-100 border-teal-500 text-teal-900 shadow-sm'
+                        : 'bg-white border-gray-200 hover:border-teal-300 hover:bg-teal-50'
+                    }
+                  `}
+                >
+                  {option}
+                  {showResult && index === topic.quiz.correctAnswer && <span className="float-right text-green-600 font-bold">✓</span>}
+                  {showResult && index === selectedOption && index !== topic.quiz.correctAnswer && <span className="float-right text-red-600 font-bold">✗</span>}
+                </button>
+              ))}
+            </div>
+            
+            {!showResult ? (
+              <button 
+                onClick={handleQuizSubmit}
+                disabled={selectedOption === null}
+                className="mt-4 w-full py-2 bg-teal-600 text-white rounded-lg font-bold text-sm hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                ตรวจคำตอบ
+              </button>
+            ) : (
+              <div className={`mt-4 p-3 rounded-lg text-center text-sm font-bold ${isCorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                {isCorrect ? 'เก่งมาก! ถูกต้องครับ 🎉' : 'ยังไม่ถูก ลองใหม่ครั้งหน้านะครับ ✌️'}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="p-5 border-t bg-gray-50 flex flex-col sm:flex-row justify-between gap-3 items-center">
+            <button 
+                onClick={() => {
+                    onClose();
+                    onStartAI(topic);
+                }}
+                className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-bold shadow-md hover:from-purple-600 hover:to-indigo-600 transition flex items-center justify-center gap-2"
+            >
+                <Sparkles size={18} />
+                Practice with AI
+            </button>
+
+            <div className="flex gap-3 w-full sm:w-auto justify-end">
+                <button 
+                    onClick={onClose}
+                    className="px-4 py-2 text-gray-500 font-medium hover:bg-gray-100 rounded-lg transition"
+                >
+                    ปิด
+                </button>
+                {/* ปุ่ม Mark as Done จะกดได้ก็ต่อเมื่อตอบถูกแล้ว (หรือเรียนซ้ำ) */}
+                <button 
+                    onClick={() => onComplete(topic.title)}
+                    disabled={!isCompleted && (!showResult || !isCorrect)} 
+                    className={`px-6 py-2 rounded-lg font-bold shadow-md transition flex items-center gap-2 ${
+                    isCompleted
+                    ? 'bg-gray-200 text-gray-500 hover:bg-gray-300'
+                    : (!showResult || !isCorrect)
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-teal-500 text-white hover:bg-teal-600'
+                    }`}
+                >
+                    {isCompleted ? 'เรียนซ้ำ' : (
+                      <>
+                        <CheckCircle size={18} />
+                        เข้าใจแล้ว!
+                      </>
+                    )}
+                </button>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
-  const [completedTopics, setCompletedTopics] = useState<string[]>([]);
+  
+  // --- Persistent State using localStorage ---
+  const [completedTopics, setCompletedTopics] = useState<string[]>(() => {
+    // 1. ลองดึงข้อมูลจาก LocalStorage
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('english-hero-progress');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse progress", e);
+        }
+      }
+    }
+    return []; // ถ้าไม่มี ให้เริ่มใหม่
+  });
+
+  // 2. บันทึกลง LocalStorage ทุกครั้งที่ completedTopics เปลี่ยน
+  useEffect(() => {
+    localStorage.setItem('english-hero-progress', JSON.stringify(completedTopics));
+  }, [completedTopics]);
   
   // --- Chat State ---
   const [chatOpen, setChatOpen] = useState<boolean>(false);
@@ -544,7 +806,8 @@ export default function App() {
       setCompletedTopics(completedTopics.filter(t => t !== topicTitle));
     } else {
       setCompletedTopics([...completedTopics, topicTitle]);
-      setSelectedTopic(null);
+      // ปิด Modal อัตโนมัติเมื่อเรียนจบ (ถ้าต้องการ)
+      // setSelectedTopic(null); 
     }
   };
 
@@ -698,7 +961,7 @@ export default function App() {
                     </div>
                     <p className="text-gray-500 text-sm mb-4">{topic.desc}</p>
                     <div className="flex items-center text-teal-500 text-sm font-medium group-hover:translate-x-1 transition-transform">
-                      เริ่มเรียน <ChevronRight size={16} />
+                      {isDone ? 'ทบทวน' : 'เริ่มเรียน'} <ChevronRight size={16} />
                     </div>
                   </div>
                 );
@@ -794,61 +1057,15 @@ export default function App() {
         )}
       </div>
 
-      {/* Lesson Modal */}
+      {/* Lesson Modal (Now with Quiz) */}
       {selectedTopic && (
-        <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setSelectedTopic(null)}>
-          <div 
-            className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden modal-animate flex flex-col max-h-[90vh]"
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="p-5 border-b flex justify-between items-center bg-gray-50">
-              <h3 className="font-bold text-xl text-gray-800">{selectedTopic.title}</h3>
-              <button onClick={() => setSelectedTopic(null)} className="p-1 hover:bg-gray-200 rounded-full transition">
-                <X size={24} className="text-gray-500" />
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div 
-              className="p-6 overflow-y-auto text-gray-700 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: selectedTopic.content }}
-            ></div>
-
-            {/* Modal Footer */}
-            <div className="p-5 border-t bg-gray-50 flex flex-col sm:flex-row justify-between gap-3 items-center">
-                <button 
-                    onClick={() => {
-                        setSelectedTopic(null); // Close modal
-                        startPracticeWithAI(selectedTopic); // Open Chat
-                    }}
-                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-bold shadow-md hover:from-purple-600 hover:to-indigo-600 transition flex items-center justify-center gap-2"
-                >
-                    <Sparkles size={18} />
-                    Practice with AI
-                </button>
-
-                <div className="flex gap-3 w-full sm:w-auto justify-end">
-                    <button 
-                        onClick={() => setSelectedTopic(null)}
-                        className="px-4 py-2 text-gray-500 font-medium hover:bg-gray-100 rounded-lg transition"
-                    >
-                        ปิด
-                    </button>
-                    <button 
-                        onClick={() => toggleComplete(selectedTopic.title)}
-                        className={`px-6 py-2 rounded-lg font-bold shadow-md transition flex items-center gap-2 ${
-                        completedTopics.includes(selectedTopic.title)
-                        ? 'bg-gray-200 text-gray-500'
-                        : 'bg-teal-500 text-white hover:bg-teal-600'
-                        }`}
-                    >
-                        {completedTopics.includes(selectedTopic.title) ? 'เรียนซ้ำ' : 'เข้าใจแล้ว!'}
-                    </button>
-                </div>
-            </div>
-          </div>
-        </div>
+        <LessonModal 
+          topic={selectedTopic} 
+          onClose={() => setSelectedTopic(null)} 
+          onComplete={toggleComplete}
+          isCompleted={completedTopics.includes(selectedTopic.title)}
+          onStartAI={startPracticeWithAI}
+        />
       )}
     </div>
   );
