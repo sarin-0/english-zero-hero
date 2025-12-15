@@ -1,12 +1,34 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, ReactNode } from 'react';
 import { Book, MessageCircle, Briefcase, Clock, Globe, X, CheckCircle, ChevronRight, GraduationCap, Sparkles, Send, Bot } from 'lucide-react';
 
-// --- Gemini API Configuration ---
+// --- Type Definitions (เพิ่มส่วนนี้เพื่อแก้ Error) ---
+interface Topic {
+  title: string;
+  desc: string;
+  content: string;
+}
+
+interface CurriculumStage {
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: ReactNode;
+  color: string;
+  topics: Topic[];
+}
+
+interface ChatMessage {
+  role: 'user' | 'model';
+  text: string;
+}
+
+// --- Gemini API Config ---
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent";
-const apiKey = "AIzaSyAMY4U8Zd81A2NcPYOiujdZoepv_pGh2V0"; // The execution environment provides the key at runtime.
+const apiKey = "AIzaSyAMY4U8Zd81A2NcPYOiujdZoepv_pGh2V0"; // ⚠️ อย่าลืมใส่ API Key ของคุณตรงนี้ (AIza...)
 
 // --- Helper: Exponential Backoff Fetch ---
-async function fetchWithBackoff(url, options, retries = 5, delay = 1000) {
+async function fetchWithBackoff(url: string, options: RequestInit, retries = 5, delay = 1000): Promise<Response> {
   try {
     const response = await fetch(url, options);
     if (!response.ok && retries > 0 && response.status === 429) {
@@ -25,9 +47,10 @@ const GlobalStyles = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap');
     body { 
-      font-family: 'Sarabun', 'Segoe UI', sans-serif; 
+      font-family: 'Sarabun', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f4f7f9; 
       margin: 0;
+      color: #333;
     }
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -66,7 +89,7 @@ const GlobalStyles = () => (
 );
 
 // --- Curriculum Data ---
-const curriculumData = [
+const curriculumData: CurriculumStage[] = [
   {
     id: 1,
     title: "Stage 1: The Foundation",
@@ -503,19 +526,19 @@ const curriculumData = [
 ];
 
 export default function App() {
-  const [selectedTopic, setSelectedTopic] = useState(null);
-  const [completedTopics, setCompletedTopics] = useState([]);
+  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+  const [completedTopics, setCompletedTopics] = useState<string[]>([]);
   
   // --- Chat State ---
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState([
+  const [chatOpen, setChatOpen] = useState<boolean>(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { role: 'model', text: 'สวัสดีครับ! ผมคือ AI Tutor ของคุณ ✨ มีอะไรให้ช่วยเรื่องภาษาอังกฤษไหมครับ? (Hi! I am your AI Tutor. How can I help?)' }
   ]);
-  const [chatInput, setChatInput] = useState('');
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const messagesEndRef = useRef(null);
+  const [chatInput, setChatInput] = useState<string>('');
+  const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const toggleComplete = (topicTitle) => {
+  const toggleComplete = (topicTitle: string) => {
     if (completedTopics.includes(topicTitle)) {
       setCompletedTopics(completedTopics.filter(t => t !== topicTitle));
     } else {
@@ -536,11 +559,11 @@ export default function App() {
     scrollToBottom();
   }, [chatMessages, chatOpen]);
 
-  const callGemini = async (prompt, customHistory = null) => {
+  const callGemini = async (prompt: string, customHistory: ChatMessage[] | null = null) => {
     setIsAiLoading(true);
     
     // Prepare history for API
-    const history = customHistory || chatMessages.map(msg => ({
+    const history = (customHistory || chatMessages).map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.text }]
     }));
@@ -583,7 +606,7 @@ export default function App() {
     callGemini(userText);
   };
 
-  const startPracticeWithAI = (topic) => {
+  const startPracticeWithAI = (topic: Topic) => {
     setChatOpen(true);
     const startPrompt = `The user is currently learning the topic: "${topic.title}". \nDescription: ${topic.desc}. \nPlease act as a teacher and start a simple practice session or roleplay related to this topic. Ask the user a simple question to start.`;
     
